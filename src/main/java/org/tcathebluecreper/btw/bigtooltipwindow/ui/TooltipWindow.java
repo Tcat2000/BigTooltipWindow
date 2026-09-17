@@ -3,9 +3,13 @@ package org.tcathebluecreper.btw.bigtooltipwindow.ui;
 import com.lowdragmc.lowdraglib2.gui.ui.ModularUI;
 import com.lowdragmc.lowdraglib2.gui.ui.UI;
 import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
+import com.lowdragmc.lowdraglib2.gui.ui.elements.ScrollerView;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Slider;
+import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
+import com.lowdragmc.lowdraglib2.gui.ui.style.StylesheetManager;
 import com.lowdragmc.lowdraglib2.gui.ui.styletemplate.MCSprites;
 import com.lowdragmc.lowdraglib2.gui.ui.window.ModularUIWindow;
+import dev.vfyjxf.taffy.style.TaffyDimension;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
@@ -13,10 +17,10 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
-import org.joml.Vector2ic;
 
 import java.util.List;
 
@@ -28,30 +32,39 @@ public class TooltipWindow extends ModularUIWindow {
     private static ModularUI createScreen() {
         UIElement background = new UIElement();
         background.getLayout().widthPercent(100).heightPercent(100);
-        background.getStyle().background(MCSprites.RECT);
+        background.addClass("panel_bg");
+        ScrollerView scroller = new ScrollerView();
+        background.addEventListener(UIEvents.LAYOUT_CHANGED, event -> {
+            scroller.getLayout().setHeight(TaffyDimension.length(event.currentElement.getSizeHeight() - 22));
+        });
+        scroller.getLayout().bottom(0);
         UIElement tooltip = new UIElement();
+        tooltip.getLayout().setHeight(TaffyDimension.length(1));
         Slider scale = new Slider.Horizontal();
         scale.setValue(1f);
         scale.setMaxValue(3);
         scale.setMinValue(0.25f);
-        background.addChildren(tooltip, scale);
+        background.addChildren(scale, scroller);
+        scroller.addScrollViewChild(tooltip);
 
         tooltip.getStyle().background(
             (graphics, mouseX, mouseY, x, y, width, height, partialTicks) -> {
-                ItemStack stack = Minecraft.getInstance().player != null ? Minecraft.getInstance().player.getMainHandItem() : ItemStack.EMPTY;
-                if(Minecraft.getInstance().screen instanceof AbstractContainerScreen<?> screen) {
-                    if(screen.getSlotUnderMouse() != null) stack = screen.getSlotUnderMouse().getItem();
+                Player player = Minecraft.getInstance().player;
+                ItemStack stack = player != null ? player.getMainHandItem() : ItemStack.EMPTY;
+                if(player != null && Minecraft.getInstance().screen instanceof AbstractContainerScreen<?> screen) {
+                    if(!player.containerMenu.getCarried().isEmpty()) stack = player.containerMenu.getCarried();
+                    else if(screen.getSlotUnderMouse() != null && screen.getSlotUnderMouse().hasItem()) stack = screen.getSlotUnderMouse().getItem();
                 }
                 graphics.pose().pushPose();
                 graphics.pose().scale(scale.getValue(),scale.getValue(),scale.getValue());
 
-                graphics.renderItem(stack, (int) (x + 5), (int) (y + 5));
-                graphics.renderItemDecorations(Minecraft.getInstance().font, stack, (int) (x + 5), (int) (y + 5));
+                graphics.renderItem(stack, (int) ((x / scale.getValue()) + 5), (int) (y / scale.getValue()) + 5);
+                graphics.renderItemDecorations(Minecraft.getInstance().font, stack, (int) ((x / scale.getValue()) + 5), (int) (y / scale.getValue()) + 5);
 
                 Font font = Minecraft.getInstance().font;
-                List<ClientTooltipComponent> components = ClientHooks.gatherTooltipComponents(stack, Screen.getTooltipFromItem(Minecraft.getInstance(), stack), stack.getTooltipImage(), 0, (int) (width / scale.getValue()) - 25, (int) height, font);
+                List<ClientTooltipComponent> components = ClientHooks.gatherTooltipComponents(stack, Screen.getTooltipFromItem(Minecraft.getInstance(), stack), stack.getTooltipImage(), 0, (int) (width / scale.getValue()) - 25, (int) 1000, font);
                 if (!components.isEmpty()) {
-                    RenderTooltipEvent.Pre preEvent = ClientHooks.onRenderTooltipPre(stack, graphics, (int) x, (int) y, graphics.guiWidth(), graphics.guiHeight(), components, font, DefaultTooltipPositioner.INSTANCE);
+                    RenderTooltipEvent.Pre preEvent = ClientHooks.onRenderTooltipPre(stack, graphics, (int) (x / scale.getValue()), (int) (y / scale.getValue()), graphics.guiWidth(), graphics.guiHeight(), components, font, DefaultTooltipPositioner.INSTANCE);
                     if (preEvent.isCanceled()) {
                         return;
                     }
@@ -68,11 +81,12 @@ public class TooltipWindow extends ModularUIWindow {
                         j += clienttooltipcomponent.getHeight();
                     }
 
-                    int l = 30;
-                    int i1 = 10;
+                    int l = (int) (30 + 1 / scale.getValue() * 5);
+                    int i1 = (int) (y / scale.getValue()) + 8;
                     graphics.pose().pushPose();
                     RenderTooltipEvent.Color colorEvent = ClientHooks.onRenderTooltipColor(stack, graphics, l, i1, preEvent.getFont(), components);
                     TooltipRenderUtil.renderTooltipBackground(graphics, l, i1, i, j, 400, colorEvent.getBackgroundStart(), colorEvent.getBackgroundEnd(), colorEvent.getBorderStart(), colorEvent.getBorderEnd());
+                    tooltip.getLayout().setHeight(TaffyDimension.length(j * scale.getValue()));
                     graphics.pose().translate(0.0F, 0.0F, 400.0F);
                     int k1 = i1;
 
@@ -98,7 +112,8 @@ public class TooltipWindow extends ModularUIWindow {
         );
 
         return ModularUI.of(UI.of(
-            background
-        ));
+            background,
+            StylesheetManager.INSTANCE.getStylesheetSafe(StylesheetManager.MODERN))
+        );
     }
 }

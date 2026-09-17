@@ -71,7 +71,9 @@ public class BigTooltipWindow {
         @SubscribeEvent
         public static void onPostFrame(RenderFrameEvent.Post event) {
             if(needOpenWindow) {
-                new TooltipWindow().open(5,50,500,500, true);
+                TooltipWindow window = new TooltipWindow();
+                window.open(5,50,500,500, true);
+                window.window().setAlwaysOnTop(true);
                 needOpenWindow = false;
             }
         }
