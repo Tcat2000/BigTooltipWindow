@@ -8,7 +8,7 @@ issueTrackerURL = "https://github.com/Tcat2000/BigTooltipWindow/issues"
 modId = "${mod_id}"
 version = "${mod_version}"
 displayName = "${mod_name}"
-logoFile="bigtooltipwindow.png"
+bannerFile="bigtooltipwindow.png"
 authors = "${mod_authors}"
 description = '''${mod_description}'''
 

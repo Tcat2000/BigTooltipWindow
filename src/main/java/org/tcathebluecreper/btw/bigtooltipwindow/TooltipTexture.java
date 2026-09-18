@@ -47,7 +47,7 @@ public class TooltipTexture implements IGuiTexture {
             Slider scale = texture.scale;
 
             ItemStack stack = player != null ? player.getMainHandItem() : ItemStack.EMPTY;
-            if(player != null && Minecraft.getInstance().screen instanceof AbstractContainerScreen<?> screen) {
+            if(player != null && Minecraft.getInstance().gui.screen() instanceof AbstractContainerScreen<?> screen) {
                 if(!player.containerMenu.getCarried().isEmpty()) stack = player.containerMenu.getCarried();
                 else if(screen.getHoveredSlot() != null && screen.getHoveredSlot().hasItem()) stack = screen.getHoveredSlot().getItem();
             }
