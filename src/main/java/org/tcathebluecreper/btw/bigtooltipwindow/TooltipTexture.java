@@ -83,7 +83,7 @@ public class TooltipTexture implements IGuiTexture {
                     graphics.pose().pushMatrix();
                     RenderTooltipEvent.Texture textureEvent = ClientHooks.onRenderTooltipTexture(stack, graphics, (int) ((x / scale.getValue()) + 5), (int) (y / scale.getValue()) + 5, preEvent.getFont(), components, stack.get(DataComponents.TOOLTIP_STYLE));
                     TooltipRenderUtil.extractTooltipBackground(graphics, l, internalY, textWidht, tempHeight, textureEvent.getTexture());
-                    self.getLayout().setHeight(TaffyDimension.length(tempHeight * scale.getValue()));
+                    self.getLayout().setHeight(TaffyDimension.length(tempHeight * scale.getValue() + 17 * scale.getValue()));
                     graphics.pose().translate(0.0F, 0.0F);
                     int localY = internalY;
 
