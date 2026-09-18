@@ -5,6 +5,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
@@ -30,7 +31,7 @@ public class BigTooltipWindow {
         }
 
         @SubscribeEvent
-        public static void registerClientCommand(RegisterCommandsEvent event) {
+        public static void registerClientCommands(RegisterClientCommandsEvent event) {
             event.getDispatcher().register(Commands.literal("tooltip_window").executes(ctx -> {
                 BigTooltipWindow.needOpenWindow = true;
                 return 1;
