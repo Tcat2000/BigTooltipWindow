@@ -7,7 +7,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RenderFrameEvent;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 @Mod(BigTooltipWindow.MODID)
 public class BigTooltipWindow {

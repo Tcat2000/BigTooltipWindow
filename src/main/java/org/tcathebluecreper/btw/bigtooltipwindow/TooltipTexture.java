@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.ClientHooks;
@@ -22,6 +23,7 @@ import java.util.List;
 public class TooltipTexture implements IGuiTexture {
     private final Slider scale;
     private final UIElement self;
+    private static final Component nothingToShow = Component.translatable("screen.bigtooltipwindow.nothing_to_show");
 
     public TooltipTexture(Slider scale, UIElement self) {
         this.scale = scale;
@@ -68,7 +70,7 @@ public class TooltipTexture implements IGuiTexture {
                 graphics.pose().pushPose();
                 RenderTooltipEvent.Color colorEvent = ClientHooks.onRenderTooltipColor(stack, graphics, l, i1, preEvent.getFont(), components);
                 TooltipRenderUtil.renderTooltipBackground(graphics, l, i1, i, j, 400, colorEvent.getBackgroundStart(), colorEvent.getBackgroundEnd(), colorEvent.getBorderStart(), colorEvent.getBorderEnd());
-                self.getLayout().setHeight(TaffyDimension.length(j * scale.getValue()));
+                self.getLayout().setHeight(TaffyDimension.length(j * scale.getValue() + 17 * scale.getValue()));
                 graphics.pose().translate(0.0F, 0.0F, 400.0F);
                 int k1 = i1;
 
@@ -90,7 +92,8 @@ public class TooltipTexture implements IGuiTexture {
             }
         }
         else {
-            graphics.drawString(font, "Nothing to show", (int) x, (int) y, -1);
+            ClientTooltipComponent.create(nothingToShow.getVisualOrderText()).renderText(font, (int) x, (int) y, graphics.pose().last().pose(), graphics.bufferSource());
+            self.getLayout().setHeight(TaffyDimension.length(10));
         }
         graphics.pose().popPose();
     }
