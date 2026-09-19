@@ -16,6 +16,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.ClientHooks;
@@ -26,6 +27,7 @@ import java.util.List;
 public class TooltipTexture implements IGuiTexture {
     private final Slider scale;
     private final UIElement self;
+    private static final Component nothingToShow = Component.translatable("screen.bigtooltipwindow.nothing_to_show");
 
     public TooltipTexture(Slider scale, UIElement self) {
         this.scale = scale;
@@ -105,7 +107,8 @@ public class TooltipTexture implements IGuiTexture {
                 }
             }
             else {
-                graphics.text(font, "Nothing to show", (int) x, (int) y, -1);
+                ClientTooltipComponent.create(nothingToShow.getVisualOrderText()).extractText(graphics, font, (int) x, (int) y);
+                self.getLayout().setHeight(TaffyDimension.length(10));
             }
             graphics.pose().popMatrix();
         }

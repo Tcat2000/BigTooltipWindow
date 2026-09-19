@@ -1,5 +1,3 @@
 {
-    "itemGroup.bigtooltipwindow": "Example Mod Tab",
-    "block.bigtooltipwindow.example_block": "Example Block",
-    "item.bigtooltipwindow.example_item": "Example Item"
+    "screen.bigtooltipwindow.nothing_to_show": "Nothing to show"
 }
