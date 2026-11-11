@@ -31,10 +31,10 @@ public class BigTooltipWindow {
 
         @SubscribeEvent
         public static void registerClientCommands(RegisterClientCommandsEvent event) {
-            event.getDispatcher().register(Commands.literal("tooltip_window").executes(ctx -> {
+            event.getDispatcher().register(Commands.literal("windowed").then(Commands.literal("tooltip").executes(ctx -> {
                 BigTooltipWindow.needOpenWindow = true;
                 return 1;
-            }));
+            })));
         }
     }
 }
